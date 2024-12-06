@@ -1,0 +1,7 @@
+/Users/filipziro/Downloads/FlightPlanner-0.9-improvements/FlightPlanner/bin/Debug/FlightPlanner.exe.config
+/Users/filipziro/Downloads/FlightPlanner-0.9-improvements/FlightPlanner/bin/Debug/FlightPlanner.exe
+/Users/filipziro/Downloads/FlightPlanner-0.9-improvements/FlightPlanner/bin/Debug/FlightPlanner.pdb
+/Users/filipziro/Downloads/FlightPlanner-0.9-improvements/FlightPlanner/obj/Debug/FlightPlanner.csproj.AssemblyReference.cache
+/Users/filipziro/Downloads/FlightPlanner-0.9-improvements/FlightPlanner/obj/Debug/FlightPlanner.csproj.CoreCompileInputs.cache
+/Users/filipziro/Downloads/FlightPlanner-0.9-improvements/FlightPlanner/obj/Debug/FlightPlanner.exe
+/Users/filipziro/Downloads/FlightPlanner-0.9-improvements/FlightPlanner/obj/Debug/FlightPlanner.pdb
