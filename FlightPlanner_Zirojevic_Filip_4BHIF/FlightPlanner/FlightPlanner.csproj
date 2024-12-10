@@ -50,8 +50,12 @@
     <Compile Include="DataLayer\Flight.cs" />
     <Compile Include="DataLayer\FlightDataMapper.cs" />
     <Compile Include="DataLayer\FlightRepository.cs" />
+    <Compile Include="DataLayer\Pilot.cs" />
     <Compile Include="DataLayer\PilotDataMapper.cs" />
+    <Compile Include="DataLayer\PilotTraining.cs" />
     <Compile Include="DataLayer\TestHelper.cs" />
+    <Compile Include="DataLayer\Training.cs" />
+    <Compile Include="DataLayer\TrainingDataMapper.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

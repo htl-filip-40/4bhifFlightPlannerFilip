@@ -35,20 +35,22 @@ namespace FlightPlanner.DataLayer
 
                 while (flightReader.Read())
                 {
-                    Pilot flight = new Pilot();
-                    flight.Id = flightReader.GetInt32(0);
-                    flight.Departure = flightReader.GetString(1);
-                    flight.Destination = flightReader.GetValue(2).ToString();
-                    flight.Duration = (int)flightReader["Duration"];
-                    flight.DepartureDate = flightReader.GetDateTime(4);
-                    flight.PlaneId = flightReader.GetInt32(5);
+                    Pilot flight = new Pilot(
+                        flightReader.GetInt32(0), // Id
+                        flightReader.GetString(1), // Lastname
+                        flightReader.GetDateTime(2), // Birthday
+                        flightReader.GetString(3), // Qualification
+                        flightReader.GetInt32(4), // FlightHours
+                        flightReader.GetDateTime(5), // FirstDate
+                        flightReader.GetInt32(6) // AirlineID
+                    );
 
                     flights.Add(flight);
                 }
 
                 return flights;
             }
-            // finally
+            
         }
      
         public Pilot Read(int Id)
@@ -63,7 +65,7 @@ namespace FlightPlanner.DataLayer
                 IDbCommand createFlightCommand = databaseConnection.CreateCommand();
                 createFlightCommand.CommandText =
                    $"insert into Flight values ({pilot.Id}, '{pilot.Departure}', '{pilot.Destination}', " +
-                   $"{pilot.Duration}, '{pilot.DepartureDate.ToString("s", System.Globalization.CultureInfo.InvariantCulture)}', " +
+                   $"{pilot.Duration}, '{pilot.DepartureDate.ToString()}', " +
                    $"{pilot.PlaneId});";
 
                 Console.WriteLine(createFlightCommand.CommandText);
@@ -84,7 +86,7 @@ namespace FlightPlanner.DataLayer
                    $"update Flight set Departure = '{flight.Departure}', " +
                    $"Destination = '{flight.Destination}', " +
                    $"Duration = {flight.Duration}, " +
-                   $"DepartureDate = '{flight.DepartureDate.ToString("s", System.Globalization.CultureInfo.InvariantCulture)}', " +
+                   $"DepartureDate = '{flight.DepartureDate.ToString()}', " +
                    $"PlaneId = {flight.PlaneId} " +
                    $"where Flight.Id = {flight.Id};";
 

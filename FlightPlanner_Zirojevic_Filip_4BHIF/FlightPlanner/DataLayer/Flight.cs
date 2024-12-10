@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace FlightPlanner.DataLayer
 {
-    class Flight
+    public class Flight
     {
         public int Id { get; set; }
         public string Departure { get; set; }
@@ -19,7 +19,7 @@ namespace FlightPlanner.DataLayer
         public override string ToString()
         {
             return $"Id: {Id}, Departure: {Departure}, Destination: {Destination}, " +
-                $"Duration: {Duration}, DepartureDate: {DepartureDate}, PlaneId: {PlaneId}";
+                   $"Duration: {Duration}, DepartureDate: {DepartureDate}, PlaneId: {PlaneId}";
         }
     }
 }
