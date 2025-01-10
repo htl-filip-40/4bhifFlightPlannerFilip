@@ -5,22 +5,22 @@ set nocount on;
 
 -- better:
 if db_id(@databaseName) is not null
-	BEGIN
-	   PRINT 'Database already exists';
-	END
+    BEGIN
+        PRINT 'Database already exists';
+    END
 ELSE
-	BEGIN
-		-- CREATE DATABASE @databaseName does not work, use dynamic SQL:
-		-- exec ('use master; CREATE DATABASE ' + @databaseName  + ';')
-		create database FlightPlanner;		
-	END;
+    BEGIN
+        -- CREATE DATABASE @databaseName does not work, use dynamic SQL:
+        -- exec ('use master; CREATE DATABASE ' + @databaseName  + ';')
+        create database FlightPlanner;
+    END;
 
 -- You need a go after creating a database so that "use FlightPlanner" works, the GO has to be removed when
 -- this file should be executed by ADO.NET
 -- After a GO the variable @databaseName is no longer available.
 -- GO 
 
-use FlightPlanner;	
+use FlightPlanner;
 
 
 PRINT 'Creating tables';
@@ -31,43 +31,43 @@ PRINT 'Creating tables';
 
 
 IF OBJECT_ID('FK_Plane_PlaneType', 'F') IS NOT NULL
-	alter TABLE dbo.Plane drop constraint FK_Plane_PlaneType;
+alter TABLE dbo.Plane drop constraint FK_Plane_PlaneType;
 
- 
+
 IF OBJECT_ID('FK_Plane_Airline', 'F') IS NOT NULL
-	alter TABLE dbo.Plane drop constraint FK_Plane_Airline;
+alter TABLE dbo.Plane drop constraint FK_Plane_Airline;
 
 
 IF OBJECT_ID('FK_Pilot_Airline', 'F') IS NOT NULL
-	alter TABLE dbo.Pilot drop constraint FK_Pilot_Airline;
+alter TABLE dbo.Pilot drop constraint FK_Pilot_Airline;
 
 
 IF OBJECT_ID('FK_PilotTraining_Pilot', 'F') IS NOT NULL
-	alter TABLE dbo.PilotTraining drop constraint FK_PilotTraining_Pilot;
+alter TABLE dbo.PilotTraining drop constraint FK_PilotTraining_Pilot;
 
 
 IF OBJECT_ID('FK_PilotTraining_Training', 'F') IS NOT NULL
-	alter TABLE dbo.PilotTraining drop constraint FK_PilotTraining_Training;
+alter TABLE dbo.PilotTraining drop constraint FK_PilotTraining_Training;
 
 
 IF OBJECT_ID('FK_Flight_Plane', 'F') IS NOT NULL
-	alter TABLE dbo.Flight drop constraint FK_Flight_Plane;
+alter TABLE dbo.Flight drop constraint FK_Flight_Plane;
 
 
 IF OBJECT_ID('FK_PilotRoster_Pilot', 'F') IS NOT NULL
-	alter TABLE dbo.PilotRoster drop constraint FK_PilotRoster_Pilot;
+alter TABLE dbo.PilotRoster drop constraint FK_PilotRoster_Pilot;
 
 
 IF OBJECT_ID('FK_PilotRoster_Flight', 'F') IS NOT NULL
-	alter TABLE dbo.PilotRoster drop constraint FK_PilotRoster_Flight;
+alter TABLE dbo.PilotRoster drop constraint FK_PilotRoster_Flight;
 
 
 IF OBJECT_ID('FK_Booking_Customer', 'F') IS NOT NULL
-	alter TABLE dbo.Booking drop constraint FK_Booking_Customer;
+alter TABLE dbo.Booking drop constraint FK_Booking_Customer;
 
 
 IF OBJECT_ID('FK_Booking_Flight', 'F') IS NOT NULL
-	alter TABLE dbo.Booking drop constraint FK_Booking_Flight;
+alter TABLE dbo.Booking drop constraint FK_Booking_Flight;
 
 
 select * from INFORMATION_SCHEMA.REFERENTIAL_CONSTRAINTS;
@@ -81,156 +81,156 @@ drop table if exists dbo.Airline
 
 
 IF OBJECT_ID('dbo.Airline', 'U') IS NOT NULL
-	DROP TABLE dbo.Airline
+    DROP TABLE dbo.Airline
 
 
 -- second parameter is optional
 IF OBJECT_ID('dbo.PlaneType') IS NOT NULL
-	DROP TABLE dbo.PlaneType
+    DROP TABLE dbo.PlaneType
 
 
 IF OBJECT_ID('dbo.Plane', 'U') IS NOT NULL
-	DROP TABLE dbo.Plane;
+    DROP TABLE dbo.Plane;
 
 
 IF OBJECT_ID('dbo.Pilot', 'U') IS NOT NULL
-	DROP TABLE dbo.Pilot
+    DROP TABLE dbo.Pilot
 
 
 IF OBJECT_ID('dbo.PilotTraining', 'U') IS NOT NULL
-	DROP TABLE dbo.PilotTraining
+    DROP TABLE dbo.PilotTraining
 
 
 IF OBJECT_ID('dbo.Training', 'U') IS NOT NULL
-	DROP TABLE dbo.Training
+    DROP TABLE dbo.Training
 
 
 IF OBJECT_ID('dbo.Flight', 'U') IS NOT NULL
-	DROP TABLE dbo.Flight
+    DROP TABLE dbo.Flight
 
 
 IF OBJECT_ID('dbo.Customer', 'U') IS NOT NULL
-	DROP TABLE dbo.Customer
+    DROP TABLE dbo.Customer
 
 
 IF OBJECT_ID('dbo.PilotRoster', 'U') IS NOT NULL
-	DROP TABLE dbo.PilotRoster
+    DROP TABLE dbo.PilotRoster
 
 
 IF OBJECT_ID('dbo.Booking', 'U') IS NOT NULL
-	DROP TABLE dbo.Booking
+    DROP TABLE dbo.Booking
 
 
 -- "On update cascade" or "on delete cascade" must not create multiple or circular paths.
 -- Multiple path: When there are two paths from the table where a record is deleted/updated to the table where
 -- the "on update cascade"/"on delete cascade" are specified. 
 CREATE TABLE dbo.Airline (
-	Id int primary key,
-	RegisteredCompanyName nvarchar(40),
-	Country nvarchar(40) NOT NULL,
-	HeadQuarters nvarchar(40) NOT NULL,	
+                             Id int primary key,
+                             RegisteredCompanyName nvarchar(40),
+                             Country nvarchar(40) NOT NULL,
+                             HeadQuarters nvarchar(40) NOT NULL,
 );
 
 
 CREATE TABLE dbo.PlaneType (
-	Id nvarchar(40) primary key,
-	Seats int NOT NULL,
-	Velocity int NOT NULL
+                               Id nvarchar(40) primary key,
+                               Seats int NOT NULL,
+                               Velocity int NOT NULL
 );
 
 
 CREATE TABLE dbo.Plane (
-	Id int primary key,
-	OwnershipDate date NOT NULL,
-	LastMaintenance date NOT NULL,
-	PlaneTypeId nvarchar(40),
-	AirlineId int,
-	CONSTRAINT FK_Plane_PlaneType FOREIGN KEY(PlaneTypeId)
-	REFERENCES PlaneType(Id) on delete set null on update cascade,
-	CONSTRAINT FK_Plane_Airline
-	FOREIGN KEY (AirlineId) REFERENCES Airline(Id) 
-	on delete set null on update no action 
+                           Id int primary key,
+                           OwnershipDate date NOT NULL,
+                           LastMaintenance date NOT NULL,
+                           PlaneTypeId nvarchar(40),
+                           AirlineId int,
+                           CONSTRAINT FK_Plane_PlaneType FOREIGN KEY(PlaneTypeId)
+                               REFERENCES PlaneType(Id) on delete set null on update cascade,
+                           CONSTRAINT FK_Plane_Airline
+                               FOREIGN KEY (AirlineId) REFERENCES Airline(Id)
+                                   on delete set null on update no action
 );
 
 
 CREATE TABLE dbo.Pilot (
-	Id int primary key,
-	LastName nvarchar(40) NOT NULL,
-	Birthday date NOT NULL,
-	-- use check constraints to implement an enum:
-	Qualification nvarchar(40) CHECK (Qualification IN('Captain', 'Copilot')), 
-	FlightHours int NOT NULL CHECK (FlightHours >= 0),
-	FirstDate date NOT NULL,
-	AirlineId int NOT NULL default -1,
-	CONSTRAINT FK_Pilot_Airline
-	FOREIGN KEY (AirlineId) REFERENCES Airline(Id) on delete set default
+                           Id int primary key,
+                           LastName nvarchar(40) NOT NULL,
+                           Birthday date NOT NULL,
+    -- use check constraints to implement an enum:
+                           Qualification nvarchar(40) CHECK (Qualification IN('Captain', 'Copilot')),
+                           FlightHours int NOT NULL CHECK (FlightHours >= 0),
+                           FirstDate date NOT NULL,
+                           AirlineId int NOT NULL default -1,
+                           CONSTRAINT FK_Pilot_Airline
+                               FOREIGN KEY (AirlineId) REFERENCES Airline(Id) on delete set default
 );
 
 
 CREATE TABLE dbo.Training (
-	Id int primary key,
-	Description nvarchar(40) NOT NULL,
-	Level int NOT NULL,
-	CHECK (Level > 0 and Level <= 5)
+                              Id int primary key,
+                              Description nvarchar(40) NOT NULL,
+                              Level int NOT NULL,
+                              CHECK (Level > 0 and Level <= 5)
 );
 
 
 CREATE TABLE dbo.PilotTraining(
-	PilotId int NOT NULL,
-	TrainingId int NOT NULL,
-	Date date NOT NULL,
-	CONSTRAINT PK_TrainingsRoster PRIMARY KEY (PilotId, TrainingId),
-	CONSTRAINT FK_PilotTraining_Pilot
-	FOREIGN KEY (PilotId) REFERENCES Pilot(Id) on delete cascade on update cascade,
-	CONSTRAINT FK_PilotTraining_Training
-	FOREIGN KEY (TrainingId) REFERENCES Training(Id) on delete cascade on update cascade,
+                                  PilotId int NOT NULL,
+                                  TrainingId int NOT NULL,
+                                  Date date NOT NULL,
+                                  CONSTRAINT PK_TrainingsRoster PRIMARY KEY (PilotId, TrainingId),
+                                  CONSTRAINT FK_PilotTraining_Pilot
+                                      FOREIGN KEY (PilotId) REFERENCES Pilot(Id) on delete cascade on update cascade,
+                                  CONSTRAINT FK_PilotTraining_Training
+                                      FOREIGN KEY (TrainingId) REFERENCES Training(Id) on delete cascade on update cascade,
 );
 
 
 CREATE TABLE dbo.Flight (
-	Id int primary key,
-	Departure nvarchar(40) NOT NULL,
-	Destination nvarchar(40) NOT NULL,
-	Duration int NOT NULL, -- duration in minutes
-	DepartureDate date NOT NULL,
-	PlaneId int,
-	CONSTRAINT FK_Flight_Plane
-	FOREIGN KEY (PlaneId) REFERENCES Plane(Id)
+                            Id int primary key,
+                            Departure nvarchar(40) NOT NULL,
+                            Destination nvarchar(40) NOT NULL,
+                            Duration int NOT NULL, -- duration in minutes
+                            DepartureDate date NOT NULL,
+                            PlaneId int,
+                            CONSTRAINT FK_Flight_Plane
+                                FOREIGN KEY (PlaneId) REFERENCES Plane(Id)
 );
 
 
 CREATE TABLE dbo.Customer (
-	Id int primary key,
-	LastName nvarchar(40) NOT NULL,
-	Birthday date NOT NULL,
-	City nvarchar(40) NOT NULL,
+                              Id int primary key,
+                              LastName nvarchar(40) NOT NULL,
+                              Birthday date NOT NULL,
+                              City nvarchar(40) NOT NULL,
 );
 
 
 -- for the m:n relationship between Pilot and Flight
 -- PilotRoster = Dienstplan der Piloten
 CREATE TABLE PilotRoster (
-	PilotId int,
-	FlightId int,
-	CONSTRAINT PK_PilotRoster PRIMARY KEY(PilotId, FlightId),
-	CONSTRAINT FK_PilotRoster_Pilot
-	FOREIGN KEY (PilotId) REFERENCES Pilot(Id) on delete cascade on update cascade,
-	CONSTRAINT FK_PilotRoster_Flight
-	FOREIGN KEY (FlightId) REFERENCES Flight(Id) on delete cascade on update cascade,
+                             PilotId int,
+                             FlightId int,
+                             CONSTRAINT PK_PilotRoster PRIMARY KEY(PilotId, FlightId),
+                             CONSTRAINT FK_PilotRoster_Pilot
+                                 FOREIGN KEY (PilotId) REFERENCES Pilot(Id) on delete cascade on update cascade,
+                             CONSTRAINT FK_PilotRoster_Flight
+                                 FOREIGN KEY (FlightId) REFERENCES Flight(Id) on delete cascade on update cascade,
 );
 
 -- for the m:n relationship between Flight and Customer (Passenger)
 CREATE TABLE Booking (
-	FlightId int default -1,
-	CustomerId int,
-	Seats int NOT NULL,
-	TravelClass int NOT NULL,
-	Price MONEY NOT NULL,
-	CONSTRAINT PK_Booking PRIMARY KEY (FlightId, CustomerId),
-	CONSTRAINT FK_Booking_Customer
-	FOREIGN KEY (CustomerId) REFERENCES Customer(Id) on delete cascade on update cascade,
-	CONSTRAINT FK_Booking_Flight
-	FOREIGN KEY (FlightId) REFERENCES Flight(Id) on delete no action on update cascade
+                         FlightId int default -1,
+                         CustomerId int,
+                         Seats int NOT NULL,
+                         TravelClass int NOT NULL,
+                         Price MONEY NOT NULL,
+                         CONSTRAINT PK_Booking PRIMARY KEY (FlightId, CustomerId),
+                         CONSTRAINT FK_Booking_Customer
+                             FOREIGN KEY (CustomerId) REFERENCES Customer(Id) on delete cascade on update cascade,
+                         CONSTRAINT FK_Booking_Flight
+                             FOREIGN KEY (FlightId) REFERENCES Flight(Id) on delete no action on update cascade
 );
 
 

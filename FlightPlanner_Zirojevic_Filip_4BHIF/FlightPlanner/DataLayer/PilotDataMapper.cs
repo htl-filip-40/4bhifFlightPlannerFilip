@@ -9,118 +9,139 @@ using System.Threading.Tasks;
 
 namespace FlightPlanner.DataLayer
 {
-    internal class PilotDataMapper
+    public class PilotDataMapper
     {
-        public String ConnectionString { get; set; }
+        public string ConnectionString { get; set; }
 
         public PilotDataMapper(string connectionString)
         {
             this.ConnectionString = connectionString;
         }
 
-        public List<Pilot> ReadFlights()
+        public List<Pilot> ReadPilots()
         {
-            List<Pilot> flights = new List<Pilot>();
+            List<Pilot> pilots = new List<Pilot>();
 
-            using (DbConnection databaseConnection = new SqlConnection(this.ConnectionString))
+            using (SqlConnection databaseConnection = new SqlConnection(this.ConnectionString))
             {
-
-                IDbCommand selectFlightCommand = databaseConnection.CreateCommand();
-
-                selectFlightCommand.CommandText = "select * from Flight";
-
+                SqlCommand selectPilotCommand = new SqlCommand("SELECT * FROM Pilot", databaseConnection);
                 databaseConnection.Open();
 
-                IDataReader flightReader = selectFlightCommand.ExecuteReader();
-
-                while (flightReader.Read())
+                using (SqlDataReader pilotReader = selectPilotCommand.ExecuteReader())
                 {
-                    Pilot flight = new Pilot(
-                        flightReader.GetInt32(0), // Id
-                        flightReader.GetString(1), // Lastname
-                        flightReader.GetDateTime(2), // Birthday
-                        flightReader.GetString(3), // Qualification
-                        flightReader.GetInt32(4), // FlightHours
-                        flightReader.GetDateTime(5), // FirstDate
-                        flightReader.GetInt32(6) // AirlineID
-                    );
+                    while (pilotReader.Read())
+                    {
+                        Pilot pilot = new Pilot
+                        {
+                            Id = pilotReader.GetInt32(0),
+                            LastName = pilotReader.GetString(1),
+                            Birthday = pilotReader.GetDateTime(2),
+                            Qualification = pilotReader.GetString(3),
+                            FlightHours = pilotReader.GetInt32(4),
+                            FirstDate = pilotReader.GetDateTime(5),
+                            AirlineId = pilotReader.GetInt32(6)
+                        };
 
-                    flights.Add(flight);
+                        pilots.Add(pilot);
+                    }
                 }
-
-                return flights;
             }
-            
+
+            return pilots;
         }
-     
-        public Pilot Read(int Id)
+
+        public Pilot Read(int id)
         {
-            throw new NotImplementedException();
+            using (SqlConnection databaseConnection = new SqlConnection(this.ConnectionString))
+            {
+                SqlCommand selectPilotCommand = new SqlCommand("SELECT * FROM Pilot WHERE Id = @Id", databaseConnection);
+                selectPilotCommand.Parameters.AddWithValue("@Id", id);
+                databaseConnection.Open();
+
+                using (SqlDataReader pilotReader = selectPilotCommand.ExecuteReader())
+                {
+                    if (pilotReader.Read())
+                    {
+                        return new Pilot
+                        {
+                            Id = pilotReader.GetInt32(0),
+                            LastName = pilotReader.GetString(1),
+                            Birthday = pilotReader.GetDateTime(2),
+                            Qualification = pilotReader.GetString(3),
+                            FlightHours = pilotReader.GetInt32(4),
+                            FirstDate = pilotReader.GetDateTime(5),
+                            AirlineId = pilotReader.GetInt32(6)
+                        };
+                    }
+                }
+            }
+
+            return null;
         }
 
         public int Create(Pilot pilot)
         {
-            using (DbConnection databaseConnection = new SqlConnection(this.ConnectionString))
+            using (SqlConnection databaseConnection = new SqlConnection(this.ConnectionString))
             {
-                IDbCommand createFlightCommand = databaseConnection.CreateCommand();
-                createFlightCommand.CommandText =
-                   $"insert into Flight values ({pilot.Id}, '{pilot.Departure}', '{pilot.Destination}', " +
-                   $"{pilot.Duration}, '{pilot.DepartureDate.ToString()}', " +
-                   $"{pilot.PlaneId});";
+                SqlCommand createPilotCommand = new SqlCommand(
+                    "INSERT INTO Pilot (Id, LastName, Birthday, Qualification, FlightHours, FirstDate, AirlineId) VALUES (@Id, @LastName, @Birthday, @Qualification, @FlightHours, @FirstDate, @AirlineId)",
+                    databaseConnection);
 
-                Console.WriteLine(createFlightCommand.CommandText);
+                createPilotCommand.Parameters.AddWithValue("@Id", pilot.Id);
+                createPilotCommand.Parameters.AddWithValue("@LastName", pilot.LastName);
+                createPilotCommand.Parameters.AddWithValue("@Birthday", pilot.Birthday);
+                createPilotCommand.Parameters.AddWithValue("@Qualification", pilot.Qualification);
+                createPilotCommand.Parameters.AddWithValue("@FlightHours", pilot.FlightHours);
+                createPilotCommand.Parameters.AddWithValue("@FirstDate", pilot.FirstDate);
+                createPilotCommand.Parameters.AddWithValue("@AirlineId", pilot.AirlineId);
+
                 databaseConnection.Open();
-
-                int rowCount = createFlightCommand.ExecuteNonQuery();
-                return rowCount;
-
+                return createPilotCommand.ExecuteNonQuery();
             }
         }
 
-        public int Update(Pilot flight)
+        public int Update(Pilot pilot)
         {
-            using (DbConnection databaseConnection = new SqlConnection(this.ConnectionString))
+            using (SqlConnection databaseConnection = new SqlConnection(this.ConnectionString))
             {
-                IDbCommand updateFlightCommand = databaseConnection.CreateCommand();
-                updateFlightCommand.CommandText =
-                   $"update Flight set Departure = '{flight.Departure}', " +
-                   $"Destination = '{flight.Destination}', " +
-                   $"Duration = {flight.Duration}, " +
-                   $"DepartureDate = '{flight.DepartureDate.ToString()}', " +
-                   $"PlaneId = {flight.PlaneId} " +
-                   $"where Flight.Id = {flight.Id};";
+                SqlCommand updatePilotCommand = new SqlCommand(
+                    "UPDATE Pilot SET LastName = @LastName, Birthday = @Birthday, Qualification = @Qualification, FlightHours = @FlightHours, FirstDate = @FirstDate, AirlineId = @AirlineId WHERE Id = @Id",
+                    databaseConnection);
 
-                Console.WriteLine(updateFlightCommand.CommandText);
+                updatePilotCommand.Parameters.AddWithValue("@Id", pilot.Id);
+                updatePilotCommand.Parameters.AddWithValue("@LastName", pilot.LastName);
+                updatePilotCommand.Parameters.AddWithValue("@Birthday", pilot.Birthday);
+                updatePilotCommand.Parameters.AddWithValue("@Qualification", pilot.Qualification);
+                updatePilotCommand.Parameters.AddWithValue("@FlightHours", pilot.FlightHours);
+                updatePilotCommand.Parameters.AddWithValue("@FirstDate", pilot.FirstDate);
+                updatePilotCommand.Parameters.AddWithValue("@AirlineId", pilot.AirlineId);
 
                 databaseConnection.Open();
-
-                int rowCount = updateFlightCommand.ExecuteNonQuery();
-                return rowCount;
-
+                return updatePilotCommand.ExecuteNonQuery();
             }
         }
 
-        public int Delete(Pilot flight)
+        public int Delete(int id)
         {
-            return Delete(flight.Id);
-        }
-
-        public int Delete(int Id)
-        {
-            using (DbConnection databaseConnection = new SqlConnection(this.ConnectionString))
+            using (SqlConnection databaseConnection = new SqlConnection(this.ConnectionString))
             {
-                IDbCommand deleteFlightCommand = databaseConnection.CreateCommand();
-                deleteFlightCommand.CommandText =
-                   $"delete from Flight where Flight.Id = {Id};";
-
-                Console.WriteLine(deleteFlightCommand.CommandText);
+                SqlCommand deletePilotCommand = new SqlCommand("DELETE FROM Pilot WHERE Id = @Id", databaseConnection);
+                deletePilotCommand.Parameters.AddWithValue("@Id", id);
 
                 databaseConnection.Open();
-
-                int rowCount = deleteFlightCommand.ExecuteNonQuery();
-                return rowCount;
+                return deletePilotCommand.ExecuteNonQuery();
             }
-
         }
+    }
+
+    public class Pilot
+    {
+        public int Id { get; set; }
+        public string LastName { get; set; }
+        public DateTime Birthday { get; set; }
+        public string Qualification { get; set; }
+        public int FlightHours { get; set; }
+        public DateTime FirstDate { get; set; }
+        public int AirlineId { get; set; }
     }
 }

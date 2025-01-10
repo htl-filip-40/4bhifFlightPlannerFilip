@@ -1,106 +1,147 @@
-﻿using FlightPlanner.DataLayer;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Data.Common;
-using System.IO;
+using System.Data.SqlClient;
+using System.Data;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-
-
-
-
 namespace FlightPlanner
 {
-    class Program
+    class PilotDataMapper
     {
+        public string ConnectionString { get; set; }
 
-        static void Main(string[] args)
+        public PilotDataMapper(string connectionString)
         {
-            // Programm verwendet ADO.NET API Connected Layer, Alternativen: ADO.NET Disconnected Layer, ADO.NET Entity Framework
-            try
-            {
-                int rowCount = -2;
-
-                // Die Angabe der Verbindung zur Datenbank erfolgt immer via Connnections mit einem Connectionstring
-                // dieser ist manchmal aufwendig, DB-Herstellerdoku oder www.connectionstrings.com helfen
-                // https://stackoverflow.com/questions/1229691/what-is-the-difference-between-integrated-security-true-and-integrated-securit
-
-                // Connection string for connecting to SQL Server Local Db, for other database servers the connection
-                // string must be modified.
-                // Inital Catalog -> name of database
-                // Integrated Security=SSPI -> use Windows Authentication (wie im Connection Dialog von Visual Studio)
-                // Integrated Security=false -> use SQL Server Authentication, you must have an SQL Server database user account
-                // TODO: it is best practice to specify the connection string in app.config/web.config
-                // string connectionString = @"Data Source=delphin;Initial Catalog=FlightPlanner;Integrated Security=SSPI";
-                // string connectionString = @"Data Source=(LocalDB)\MSSQLLocalDb;Initial Catalog=FlightPlanner;Integrated Security=false;uid=Reinhard;password=reinhard";
-                string connectionString = @"Data Source=localhost,11433;Initial Catalog=FlightPlanner;User ID=sa;Password=yourComplexPassword!;";
-                // The script to execute must not contain GO!
-                // Recreate the database each time the program is run so that we always work with the same data for testing
-                TestHelper.InitializeDatabase(connectionString);
-
-                // CRUD - Create, Read, Update, Delete
-                FlightDataMapper flightDataMapper = new FlightDataMapper(connectionString);
-
-                Console.WriteLine("select * from Flight:");
-                List<Flight> flights = flightDataMapper.ReadFlights();
-
-                foreach (Flight flight in flights)
-                {
-                    Console.WriteLine(flight.ToString());
-                }
-
-                Flight testFlight = new Flight
-                {
-                    Id = 1001,
-                    Departure = "Vienna",
-                    Destination = "Budapest",
-                    DepartureDate = DateTime.Now,
-                    Duration = 40,
-                    PlaneId = 21
-                };
-
-                // flightDataMapper.Create(testFlight);
-
-                testFlight.Duration = 450;
-                rowCount = flightDataMapper.Update(testFlight);
-
-                // rowCount = flightDataMapper.Delete(testFlight);
-
-                FlightRepository flightPlannerDataModel = new FlightRepository(connectionString);
-                flightPlannerDataModel.DeleteFlight(204);
-
-                BookingDataMapper bookingDataMapper = new BookingDataMapper(connectionString);
-                // Stored procedure
-                // bookingDataMapper.TestStoredProcedure();
-                // bookingDataMapper.Create(new Booking(209, 1005, 3, 2, 11199m));
-
-                Console.WriteLine();
-                Console.WriteLine("--- Update your name ---");
-                Console.WriteLine("Enter your new name: ");
-                // Elon Musk's son's name: X Æ A-Xii
-                // A nice name but this one is better to hack (SQL Injection) the database: 
-                // X Æ A-Xii' where Customer.Id = 1003; update Booking set Booking.Price = 0 where Booking.CustomerId = 1003; --
-                string newName = Console.ReadLine();
-
-                CustomerDataMapper customerDataMapper = new CustomerDataMapper(connectionString);
-
-                // changes more than 2 data records (rows)
-                rowCount = customerDataMapper.UpdateLastName(1003, newName);
-                if (rowCount < 1)
-                {
-                    Console.WriteLine($"{nameof(customerDataMapper.UpdateLastName)}: No rows were updated!");
-                }
-
-                
-            }
-            catch (Exception ex)
-            {
-               Console.WriteLine(ex.Message);
-            }
-            Console.WriteLine("Press enter to stop the program.");
-            Console.ReadLine();
+            this.ConnectionString = connectionString;
         }
+
+        public List<Pilot> ReadPilots()
+        {
+            List<Pilot> pilots = new List<Pilot>();
+
+            using (SqlConnection databaseConnection = new SqlConnection(this.ConnectionString))
+            {
+                SqlCommand selectPilotCommand = new SqlCommand("SELECT * FROM Pilot", databaseConnection);
+                databaseConnection.Open();
+
+                using (SqlDataReader pilotReader = selectPilotCommand.ExecuteReader())
+                {
+                    while (pilotReader.Read())
+                    {
+                        Pilot pilot = new Pilot
+                        {
+                            Id = pilotReader.GetInt32(0),
+                            LastName = pilotReader.GetString(1),
+                            Birthday = pilotReader.GetDateTime(2),
+                            Qualification = pilotReader.GetString(3),
+                            FlightHours = pilotReader.GetInt32(4),
+                            FirstDate = pilotReader.GetDateTime(5),
+                            AirlineId = pilotReader.GetInt32(6)
+                        };
+
+                        pilots.Add(pilot);
+                    }
+                }
+            }
+
+            return pilots;
+        }
+
+        public Pilot Read(int id)
+        {
+            using (SqlConnection databaseConnection = new SqlConnection(this.ConnectionString))
+            {
+                SqlCommand selectPilotCommand = new SqlCommand("SELECT * FROM Pilot WHERE Id = @Id", databaseConnection);
+                selectPilotCommand.Parameters.AddWithValue("@Id", id);
+                databaseConnection.Open();
+
+                using (SqlDataReader pilotReader = selectPilotCommand.ExecuteReader())
+                {
+                    if (pilotReader.Read())
+                    {
+                        return new Pilot
+                        {
+                            Id = pilotReader.GetInt32(0),
+                            LastName = pilotReader.GetString(1),
+                            Birthday = pilotReader.GetDateTime(2),
+                            Qualification = pilotReader.GetString(3),
+                            FlightHours = pilotReader.GetInt32(4),
+                            FirstDate = pilotReader.GetDateTime(5),
+                            AirlineId = pilotReader.GetInt32(6)
+                        };
+                    }
+                }
+            }
+
+            return null;
+        }
+
+        public int Create(Pilot pilot)
+        {
+            using (SqlConnection databaseConnection = new SqlConnection(this.ConnectionString))
+            {
+                SqlCommand createPilotCommand = new SqlCommand(
+                    "INSERT INTO Pilot (Id, LastName, Birthday, Qualification, FlightHours, FirstDate, AirlineId) VALUES (@Id, @LastName, @Birthday, @Qualification, @FlightHours, @FirstDate, @AirlineId)",
+                    databaseConnection);
+
+                createPilotCommand.Parameters.AddWithValue("@Id", pilot.Id);
+                createPilotCommand.Parameters.AddWithValue("@LastName", pilot.LastName);
+                createPilotCommand.Parameters.AddWithValue("@Birthday", pilot.Birthday);
+                createPilotCommand.Parameters.AddWithValue("@Qualification", pilot.Qualification);
+                createPilotCommand.Parameters.AddWithValue("@FlightHours", pilot.FlightHours);
+                createPilotCommand.Parameters.AddWithValue("@FirstDate", pilot.FirstDate);
+                createPilotCommand.Parameters.AddWithValue("@AirlineId", pilot.AirlineId);
+
+                databaseConnection.Open();
+                return createPilotCommand.ExecuteNonQuery();
+            }
+        }
+
+        public int Update(Pilot pilot)
+        {
+            using (SqlConnection databaseConnection = new SqlConnection(this.ConnectionString))
+            {
+                SqlCommand updatePilotCommand = new SqlCommand(
+                    "UPDATE Pilot SET LastName = @LastName, Birthday = @Birthday, Qualification = @Qualification, FlightHours = @FlightHours, FirstDate = @FirstDate, AirlineId = @AirlineId WHERE Id = @Id",
+                    databaseConnection);
+
+                updatePilotCommand.Parameters.AddWithValue("@Id", pilot.Id);
+                updatePilotCommand.Parameters.AddWithValue("@LastName", pilot.LastName);
+                updatePilotCommand.Parameters.AddWithValue("@Birthday", pilot.Birthday);
+                updatePilotCommand.Parameters.AddWithValue("@Qualification", pilot.Qualification);
+                updatePilotCommand.Parameters.AddWithValue("@FlightHours", pilot.FlightHours);
+                updatePilotCommand.Parameters.AddWithValue("@FirstDate", pilot.FirstDate);
+                updatePilotCommand.Parameters.AddWithValue("@AirlineId", pilot.AirlineId);
+
+                databaseConnection.Open();
+                return updatePilotCommand.ExecuteNonQuery();
+            }
+        }
+
+        public int Delete(int id)
+        {
+            using (SqlConnection databaseConnection = new SqlConnection(this.ConnectionString))
+            {
+                SqlCommand deletePilotCommand = new SqlCommand("DELETE FROM Pilot WHERE Id = @Id", databaseConnection);
+                deletePilotCommand.Parameters.AddWithValue("@Id", id);
+
+                databaseConnection.Open();
+                return deletePilotCommand.ExecuteNonQuery();
+            }
+        }
+    }
+
+    public class Pilot
+    {
+        public int Id { get; set; }
+        public string LastName { get; set; }
+        public DateTime Birthday { get; set; }
+        public string Qualification { get; set; }
+        public int FlightHours { get; set; }
+        public DateTime FirstDate { get; set; }
+        public int AirlineId { get; set; }
     }
 }

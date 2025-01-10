@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace FlightPlanner.DataLayer
 {
-    public class Flight
+    class Flight
     {
         public int Id { get; set; }
         public string Departure { get; set; }

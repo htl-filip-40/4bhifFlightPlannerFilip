@@ -52,7 +52,10 @@
     <Compile Include="DataLayer\FlightRepository.cs" />
     <Compile Include="DataLayer\Pilot.cs" />
     <Compile Include="DataLayer\PilotDataMapper.cs" />
+    <Compile Include="DataLayer\PilotRepository.cs" />
     <Compile Include="DataLayer\PilotTraining.cs" />
+    <Compile Include="DataLayer\Plane Repository.cs" />
+    <Compile Include="DataLayer\PlaneDataMapper.cs" />
     <Compile Include="DataLayer\TestHelper.cs" />
     <Compile Include="DataLayer\Training.cs" />
     <Compile Include="DataLayer\TrainingDataMapper.cs" />
