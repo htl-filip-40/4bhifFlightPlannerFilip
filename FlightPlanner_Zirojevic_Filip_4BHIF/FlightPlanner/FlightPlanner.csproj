@@ -44,6 +44,8 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="BusinessLogicLayer\BookingService.cs" />
+    <Compile Include="DataLayer\Airline.cs" />
+    <Compile Include="DataLayer\AirlineDatamapper.cs" />
     <Compile Include="DataLayer\CustomerDataMapper.cs" />
     <Compile Include="DataLayer\Booking.cs" />
     <Compile Include="DataLayer\BookingDataMapper.cs" />
