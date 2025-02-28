@@ -45,13 +45,11 @@
   <ItemGroup>
     <Compile Include="BusinessLogicLayer\BookingService.cs" />
     <Compile Include="BusinessLogicLayer\FlightBookingLogic\BookingAnfrage.cs" />
-    <Compile Include="BusinessLogicLayer\FlightBookingLogic\BookingService.cs" />
     <Compile Include="BusinessLogicLayer\FlightBookingLogic\FlightBooker.cs" />
-    <Compile Include="DataLayer\Booking.cs" />
-    <Compile Include="DataLayer\BookingDataMapper.cs" />
-    <Compile Include="DataLayer\BookingTest.cs" />
     <Compile Include="DataLayer\Customer.cs" />
     <Compile Include="DataLayer\CustomerDataMapper.cs" />
+    <Compile Include="DataLayer\Booking.cs" />
+    <Compile Include="DataLayer\BookingDataMapper.cs" />
     <Compile Include="DataLayer\DataMapperAufgabe.cs" />
     <Compile Include="DataLayer\Flight.cs" />
     <Compile Include="DataLayer\FlightDataMapper.cs" />
@@ -64,7 +62,6 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="DataLayer\FlightPlanner.csproj" />
     <Content Include="DataLayer\FlightPlannerCreateDb.sql" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

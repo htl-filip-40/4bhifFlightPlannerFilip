@@ -1,3 +1,4 @@
+﻿using FlightPlanner.BusinessLogicLayer.FlightBookingLogic;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -6,13 +7,11 @@ using System.Threading.Tasks;
 
 namespace FlightPlanner.DataLayer
 {
-    internal class Training
+    class FlightBooker
     {
-        public int id { set; get; }
-
-        public Training(int id) 
+        public bool BookFlight(BookingAnfrage anfrage)
         {
-            this.id = id;
+            return true;
         }
     }
 }
