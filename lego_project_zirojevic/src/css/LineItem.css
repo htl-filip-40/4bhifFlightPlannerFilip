@@ -1,0 +1,72 @@
+.line-item {
+    display: grid;
+    grid-template-columns: 1.5fr 1fr 1fr 1fr;
+    align-items: center;
+    padding: 20px 10px;
+    border-bottom: 1px solid #e2e2e2;
+}
+
+/* Spalte 1: Bild + Text */
+.item-info {
+    display: flex;
+    gap: 15px;
+    align-items: center;
+}
+
+.item-image {
+    width: 70px;
+    height: 70px;
+    object-fit: contain;
+}
+
+.item-text{
+    display: flex;
+    flex-direction: column;
+}
+
+.item-text h3 {
+    margin: 0;
+    font-size: 16px;
+    color: #333;
+}
+
+.item-text a {
+    font-size: 13px;
+    color: #3b82f6;
+    text-decoration: none;
+}
+
+.outOfstock {
+    font-size: 12px;
+    color: red;
+}
+
+.inStock {
+    font-size: 12px;
+    color: green;
+}
+
+/* Spalte 2: Quantity + Trash */
+.item-qty {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.item-qty input {
+    width: 45px;
+    padding: 5px;
+    text-align: center;
+}
+
+.trash {
+    cursor: pointer;
+    font-size: 18px;
+}
+
+/* Spalte 3 & 4 */
+.item-price,
+.item-total {
+    font-size: 15px;
+    color: #444;
+}
