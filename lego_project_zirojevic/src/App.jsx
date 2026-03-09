@@ -1,6 +1,5 @@
 import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
+
 import './css/App.css'
 import Cart from "./components/Cart.jsx";
 import { BrowserRouter, Routes, Route, Link } from 'react-router-dom';
